@@ -43,8 +43,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BuilderPattern.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="v1\Computer.cs" />
+    <Compile Include="v2\ComputerBuilder.cs" />
+    <Compile Include="v3\AdvancedComputerBuilder.cs" />
+    <Compile Include="v3\LowComputerBuilder.cs" />
+    <Compile Include="v3\MediumComputerBuilder.cs" />
+    <Compile Include="v4\AdvancedComputerBuilder.cs" />
+    <Compile Include="v4\IComputerBuild.cs" />
+    <Compile Include="v4\LowComputerBuilder.cs" />
+    <Compile Include="v4\MediumComputerBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

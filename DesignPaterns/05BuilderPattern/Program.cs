@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading.Tasks;
+using _05BuilderPattern.v1;
+using _05BuilderPattern.v3;
 
 namespace _05BuilderPattern
 {
@@ -14,128 +17,116 @@ namespace _05BuilderPattern
     class Program
     {
         static void Main(string[] args)
-        {            
-            // 客户找到电脑城老板说要买电脑，这里要装两台电脑
-            // 创建指挥者和构造者
-            Director director = new Director();
-            Builder b1 = new ConcreteBuilder1();
-            Builder b2 = new ConcreteBuilder2();
+        {
+            //组装电脑V1版本
+            Computer computer = new Computer();
+            computer.SetCPU("I9");
+            computer.SetGPU("3060");
+            computer.SetMemory("32GB");
+            computer.SetHD("500GB");
+            Console.WriteLine(computer.ToString());
+            
+            //组装电脑V2版本--缺点：不同用户需求不同的电脑，但是只能返回同一款电脑
+            ComputerBuilder computerBuilder = new ComputerBuilder();
+            var computerV2 = computerBuilder.Build();
+            Console.WriteLine(computerV2.ToString());
+            
+            //组装电脑V3版本--缺点：代码重复，并且如果忘记配置其中一项，代码不会报错
+            LowComputerBuilder lowComputerBuilder = new LowComputerBuilder();
+            var lowComputer = lowComputerBuilder.Build();
+            Console.WriteLine(lowComputer.ToString());
 
-            // 老板叫员工去组装第一台电脑
-            director.Construct(b1);
+            MediumComputerBuilder mediumComputerBuilder = new MediumComputerBuilder();
+            var mediumComp = mediumComputerBuilder.Build();
+            Console.WriteLine(mediumComp.ToString());
 
-            // 组装完，组装人员搬来组装好的电脑
-            Computer computer1 = b1.GetComputer();
-            computer1.Show();
+            AdvancedComputerBuilder advancedComputerBuilder = new AdvancedComputerBuilder();
+            var advanceComputer = advancedComputerBuilder.Build();
+            Console.WriteLine(advanceComputer.ToString());
+            
+            
+            
 
-            // 老板叫员工去组装第二台电脑
-            director.Construct(b2);
-            Computer computer2 = b2.GetComputer();
-            computer2.Show();
 
+            //返回key,valueA格式的方法
+            //QueryBuilder builder = new QueryBuilder();
+            //FormBodyBuilder builder = new FormBodyBuilder();
+            HttpHeaderBuilder builder = new HttpHeaderBuilder();
+            ConstructionProcess(builder);
+            Console.WriteLine( builder.Build());
             Console.Read();
         }
 
-        /// <summary>
-        /// 小王和小李难道会自愿地去组装嘛，谁不想休息的，这必须有一个人叫他们去组装才会去的
-        /// 这个人当然就是老板了，也就是建造者模式中的指挥者
-        /// 指挥创建过程类
-        /// </summary>
-        public class Director
-        {
-            // 组装电脑
-            public void Construct(Builder builder)
+        
+            public static void ConstructionProcess(IKeyValueCollectionBuilder builder)
             {
-                builder.BuildPartCPU();
-                builder.BuildPartMainBoard();
+                builder.Add("make", "lada")
+                    .Add("colur", "red")
+                    .Add("year", 1980.ToString());
+
             }
+        
+
+        public interface IKeyValueCollectionBuilder
+        {
+            IKeyValueCollectionBuilder Add(string key, string value);
         }
 
         /// <summary>
-        /// 电脑类
+        /// 返回查询字符串
         /// </summary>
-        public class Computer
+        public class QueryBuilder : IKeyValueCollectionBuilder
         {
-            // 电脑组件集合
-            private IList<string> parts = new List<string>();
-
-            // 把单个组件添加到电脑组件集合中
-            public void Add(string part)
+            private StringBuilder _queryStringBuilder = new StringBuilder();
+            public IKeyValueCollectionBuilder Add(string key, string value)
             {
-                parts.Add(part);
+                _queryStringBuilder.Append(_queryStringBuilder.Length == 0 ? "?" : "&");
+                _queryStringBuilder.Append(key);
+                _queryStringBuilder.Append('=');
+                _queryStringBuilder.Append(Uri.EscapeDataString(value));
+                return this;
             }
 
-            public void Show()
+            public string Build()
             {
-                Console.WriteLine("电脑开始在组装.......");
-                foreach (string part in parts)
-                {
-                    Console.WriteLine("组件" + part + "已装好");
-                }
-
-                Console.WriteLine("电脑组装好了");
+                return _queryStringBuilder.ToString();
             }
-        }
-
-        /// <summary>
-        /// 抽象建造者，这个场景下为 "组装人" ，这里也可以定义为接口
-        /// </summary>
-        public abstract class Builder
+        }  
+        public class FormBodyBuilder : IKeyValueCollectionBuilder
         {
-            // 装CPU
-            public abstract void BuildPartCPU();
-            // 装主板
-            public abstract void BuildPartMainBoard();
+            private StringBuilder _queryStringBuilder = new StringBuilder();
+            public IKeyValueCollectionBuilder Add(string key, string value)
+            {
+                _queryStringBuilder.Append(key);
+                _queryStringBuilder.Append('=');
+                _queryStringBuilder.Append(value);
+                _queryStringBuilder.AppendLine();
+                
+                return this;
+            }
 
-            // 当然还有装硬盘，电源等组件，这里省略
-
-            // 获得组装好的电脑
-            public abstract Computer GetComputer();
-        }
-
-        /// <summary>
-        /// 具体创建者，具体的某个人为具体创建者，例如：装机小王啊
-        /// </summary>
-        public class ConcreteBuilder1 : Builder
+            public string Build()
+            {
+                return _queryStringBuilder.ToString();
+            }
+        } 
+        public class HttpHeaderBuilder : IKeyValueCollectionBuilder
         {
-            Computer computer = new Computer();
-            public override void BuildPartCPU()
+            private StringBuilder _queryStringBuilder = new StringBuilder();
+            public IKeyValueCollectionBuilder Add(string key, string value)
             {
-                computer.Add("CPU1");
+                _queryStringBuilder.Append(key);
+                _queryStringBuilder.Append(':');
+                _queryStringBuilder.Append(value);
+                _queryStringBuilder.AppendLine();
+                
+                return this;
             }
 
-            public override void BuildPartMainBoard()
+            public string Build()
             {
-                computer.Add("Main board1");
+                return _queryStringBuilder.ToString();
             }
-
-            public override Computer GetComputer()
-            {
-                return computer;
-            }
-        }
-
-        /// <summary>
-        /// 具体创建者，具体的某个人为具体创建者，例如：装机小李啊
-        /// 又装另一台电脑了
-        /// </summary>
-        public class ConcreteBuilder2 : Builder
-        {
-            Computer computer = new Computer();
-            public override void BuildPartCPU()
-            {
-                computer.Add("CPU2");
-            }
-
-            public override void BuildPartMainBoard()
-            {
-                computer.Add("Main board2");
-            }
-
-            public override Computer GetComputer()
-            {
-                return computer;
-            }
-        }   
+        } 
     }
 }
