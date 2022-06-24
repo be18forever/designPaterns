@@ -4,13 +4,12 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{1463FC1D-460B-441D-ABC9-F415C1239498}</ProjectGuid>
+    <ProjectGuid>{6697C055-0465-49EA-8CD0-219F2BC4A024}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>_05BuilderPattern</RootNamespace>
-    <AssemblyName>05BuilderPattern</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <RootNamespace>_06PrototypePattern</RootNamespace>
+    <AssemblyName>06PrototypePattern</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -43,19 +42,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="KeyValueCollection\IKeyValueCollectionBuilder.cs" />
-    <Compile Include="KeyValueCollection\KeyValueBuilder.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ComputerBuild\v1\Computer.cs" />
-    <Compile Include="ComputerBuild\v2\ComputerBuilder.cs" />
-    <Compile Include="ComputerBuild\v3\AdvancedComputerBuilder.cs" />
-    <Compile Include="ComputerBuild\v3\LowComputerBuilder.cs" />
-    <Compile Include="ComputerBuild\v3\MediumComputerBuilder.cs" />
-    <Compile Include="ComputerBuild\v4\AdvancedComputerBuilder.cs" />
-    <Compile Include="ComputerBuild\v4\IComputerBuild.cs" />
-    <Compile Include="ComputerBuild\v4\LowComputerBuilder.cs" />
-    <Compile Include="ComputerBuild\v4\MediumComputerBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

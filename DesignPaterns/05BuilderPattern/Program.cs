@@ -4,20 +4,24 @@ using System.Linq;
 using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading.Tasks;
+using _05BuilderPattern.KeyValueCollection;
 using _05BuilderPattern.v1;
 using _05BuilderPattern.v3;
 
 namespace _05BuilderPattern
 {
     /// <summary>
-    /// 以组装电脑为例子
-    /// 每台电脑的组成过程都是一致的，但是使用同样的构建过程可以创建不同的表示(即可以组装成不一样的电脑，配置不一样)
-    /// 组装电脑的这个场景就可以应用建造者模式来设计
+    /// 两个例子,一个组装电脑,一个返回查询参数
     /// </summary>
     class Program
     {
         static void Main(string[] args)
         {
+            #region 组装电脑示例 
+            /// 以组装电脑为例子
+            /// 每台电脑的组成过程都是一致的，但是使用同样的构建过程可以创建不同的表示(即可以组装成不一样的电脑，配置不一样)
+            /// 组装电脑的这个场景就可以应用建造者模式来设计
+
             //组装电脑V1版本
             Computer computer = new Computer();
             computer.SetCPU("I9");
@@ -43,90 +47,27 @@ namespace _05BuilderPattern
             AdvancedComputerBuilder advancedComputerBuilder = new AdvancedComputerBuilder();
             var advanceComputer = advancedComputerBuilder.Build();
             Console.WriteLine(advanceComputer.ToString());
-            
-            
-            
+            #endregion
 
 
-            //返回key,valueA格式的方法
-            //QueryBuilder builder = new QueryBuilder();
-            //FormBodyBuilder builder = new FormBodyBuilder();
+
+            #region 返回key,valueA格式的方法示例 
+            QueryBuilder queryBuilder = new QueryBuilder();
+            KeyValueBuilder.ConstructionProcess(queryBuilder);
+            Console.WriteLine(queryBuilder.Build());
+
             HttpHeaderBuilder builder = new HttpHeaderBuilder();
-            ConstructionProcess(builder);
+            KeyValueBuilder.ConstructionProcess(builder);
             Console.WriteLine( builder.Build());
+
+            FormBodyBuilder formBodyBuilder = new FormBodyBuilder();
+            KeyValueBuilder.ConstructionProcess(formBodyBuilder);
+            Console.WriteLine(formBodyBuilder.Build());
             Console.Read();
+            #endregion
         }
 
-        
-            public static void ConstructionProcess(IKeyValueCollectionBuilder builder)
-            {
-                builder.Add("make", "lada")
-                    .Add("colur", "red")
-                    .Add("year", 1980.ToString());
 
-            }
-        
-
-        public interface IKeyValueCollectionBuilder
-        {
-            IKeyValueCollectionBuilder Add(string key, string value);
-        }
-
-        /// <summary>
-        /// 返回查询字符串
-        /// </summary>
-        public class QueryBuilder : IKeyValueCollectionBuilder
-        {
-            private StringBuilder _queryStringBuilder = new StringBuilder();
-            public IKeyValueCollectionBuilder Add(string key, string value)
-            {
-                _queryStringBuilder.Append(_queryStringBuilder.Length == 0 ? "?" : "&");
-                _queryStringBuilder.Append(key);
-                _queryStringBuilder.Append('=');
-                _queryStringBuilder.Append(Uri.EscapeDataString(value));
-                return this;
-            }
-
-            public string Build()
-            {
-                return _queryStringBuilder.ToString();
-            }
-        }  
-        public class FormBodyBuilder : IKeyValueCollectionBuilder
-        {
-            private StringBuilder _queryStringBuilder = new StringBuilder();
-            public IKeyValueCollectionBuilder Add(string key, string value)
-            {
-                _queryStringBuilder.Append(key);
-                _queryStringBuilder.Append('=');
-                _queryStringBuilder.Append(value);
-                _queryStringBuilder.AppendLine();
-                
-                return this;
-            }
-
-            public string Build()
-            {
-                return _queryStringBuilder.ToString();
-            }
-        } 
-        public class HttpHeaderBuilder : IKeyValueCollectionBuilder
-        {
-            private StringBuilder _queryStringBuilder = new StringBuilder();
-            public IKeyValueCollectionBuilder Add(string key, string value)
-            {
-                _queryStringBuilder.Append(key);
-                _queryStringBuilder.Append(':');
-                _queryStringBuilder.Append(value);
-                _queryStringBuilder.AppendLine();
-                
-                return this;
-            }
-
-            public string Build()
-            {
-                return _queryStringBuilder.ToString();
-            }
-        } 
+      
     }
 }
